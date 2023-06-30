@@ -4,34 +4,40 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Rollers;
+
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class ConeOut extends CommandBase {
-  @SuppressWarnings("unused")
-  private final ExampleSubsystem m_subsystem;
+public class RollersManual extends CommandBase {
+
+  private final Rollers rollers;
+
+  private final DoubleSupplier input;
 
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param rollers The subsystem used by this command.
    */
-  public ConeOut(ExampleSubsystem subsystem) {
-    m_subsystem = subsystem;
+  public RollersManual(DoubleSupplier input, Rollers rollers) {
+    this.rollers = rollers;
+    this.input = input;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(rollers);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    rollers.manualControl(input.getAsDouble());
+  }
 
   // Called once the command ends or is interrupted.
   @Override

@@ -4,12 +4,26 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.Constants.ArmPreset;
+import frc.robot.Constants.ControllerConstants;
+import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.ArmManual;
+import frc.robot.commands.InRoller;
+import frc.robot.commands.OutRoller;
+import frc.robot.commands.RollersManual;
+import frc.robot.commands.SetPreset;
+import frc.robot.commands.ShootRoller;
+import frc.robot.commands.StopRollers;
+import frc.robot.commands.TankDrive;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Rollers;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -20,11 +34,25 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final Drive drive = new Drive();
+  private final Arm arm = new Arm();
+  private final Rollers rollers = new Rollers();
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandJoystick leftJoystick = new CommandJoystick(ControllerConstants.leftJoystickPort);
+  private final CommandJoystick rightJoystick = new CommandJoystick(ControllerConstants.rightJoystickPort);
+  
+  private final XboxController driverController = new XboxController(ControllerConstants.driverControllerPort);
+  private final XboxController operatorController = new XboxController(ControllerConstants.operatorController);
+
+  private final Trigger driverRightTrigger = new Trigger(() -> driverController.getRightTriggerAxis() > 0.5);
+
+  private final JoystickButton operatorAButton = new JoystickButton(operatorController, 1);
+  private final JoystickButton operatorBButton = new JoystickButton(operatorController, 2);
+  private final JoystickButton operatorXButton = new JoystickButton(operatorController, 3);
+  private final JoystickButton operatorYButton = new JoystickButton(operatorController, 4);
+  private final JoystickButton operatorRightBumper = new JoystickButton(operatorController, 6);
+  private final JoystickButton operatorLeftBumper = new JoystickButton(operatorController, 5);
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -42,13 +70,36 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
+      if(!DriverStation.isJoystickConnected(ControllerConstants.rightJoystickPort)) {
+      drive.setDefaultCommand(new ArcadeDrive(
+        () -> deadband(-driverController.getLeftY()), 
+        () -> deadband(driverController.getRightX()), 
+        true,
+        drive
+      ));
+    }
+    else {
+      drive.setDefaultCommand(new TankDrive(
+        () -> deadband(-leftJoystick.getY()),
+        () -> deadband(-rightJoystick.getY()),
+        false,
+        drive
+      ));
+    }
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    driverRightTrigger.onTrue(new InRoller(rollers)).onFalse(new StopRollers(rollers));
+
+    arm.setDefaultCommand(new ArmManual(() -> deadband(-operatorController.getRightY()), arm));
+
+    rollers.setDefaultCommand(new RollersManual(() -> deadband(operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()), rollers));
+
+    operatorAButton.onTrue(new SetPreset(ArmPreset.Wheelie, arm));
+    operatorBButton.onTrue(new SetPreset(ArmPreset.Hover, arm));
+    operatorXButton.onTrue(new SetPreset(ArmPreset.Stow, arm));
+    operatorYButton.onTrue(new SetPreset(ArmPreset.Shoot, arm));
+
+    operatorRightBumper.onTrue(new ShootRoller(rollers)).onFalse(new StopRollers(rollers));
+    operatorLeftBumper.onTrue(new OutRoller(rollers)).onFalse(new StopRollers(rollers));
   }
 
   /**
@@ -58,6 +109,13 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return null;
+  }
+
+  public double deadband(double input) {
+    if(Math.abs(input) <= ControllerConstants.controllerDeadband) {
+      return 0.0;
+    }
+    return input;
   }
 }

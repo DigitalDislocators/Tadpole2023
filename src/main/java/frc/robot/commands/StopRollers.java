@@ -4,23 +4,23 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Rollers;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class CubeOut extends CommandBase {
-  @SuppressWarnings("unused")
-  private final ExampleSubsystem m_subsystem;
+public class StopRollers extends CommandBase {
+
+  private final Rollers rollers;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public CubeOut(ExampleSubsystem subsystem) {
-    m_subsystem = subsystem;
+  public StopRollers(Rollers rollers) {
+    this.rollers = rollers;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(rollers);
   }
 
   // Called when the command is initially scheduled.
@@ -29,7 +29,9 @@ public class CubeOut extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    rollers.setPower(0.0);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -38,6 +40,6 @@ public class CubeOut extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

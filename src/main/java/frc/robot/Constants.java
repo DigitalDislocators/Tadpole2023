@@ -15,21 +15,32 @@ package frc.robot;
 public final class Constants {
 
   public static class CANDevices {
-    public static final int leftDriveId = 0;
-    public static final int rightDriveid = 0;
-    public static final int armId = 0;
-    public static final int rollerId = 0;
+    public static final int leftDriveId = 1;
+    public static final int rightDriveId = 2;
+    public static final int armId = 3;
+    public static final int rollerId = 4;
 
   }
 
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
+  public static class ControllerConstants {
+    public static final int leftJoystickPort = 0;
+    public static final int rightJoystickPort = 1;
+    public static final double controllerDeadband = 0.1;
+    public static final int driverControllerPort = 0;
+    public static final int operatorController = 2;
   }
 
   public static class ArmConstants {
     public static final double maxPower = 0.5;
-    public static final double kP = 0.01;
+    public static final double kP = 0.02;
     public static final double kD = 0.0;
+
+    public static final double gearReduction = (1.0 / 100.0) * (16.0 / 24.0);
+    public static final double degreesToEncRev = gearReduction * 360.0;
+    public static final double offsetDeg = 47.0;
+
+    public static final double minDeg = -47.0;
+    public static final double maxDeg = 90.0;
   }
 
   public enum RollerMode {
@@ -39,14 +50,20 @@ public final class Constants {
 
   public enum ArmPreset {
     Stow(-45.0),
-    Frame(-30.0),
+    Shoot(-39.0),
     Hover(55.0),
-    Wheelie(90.0);
+    Wheelie(85.0);
 
     public final double degrees;
 
     ArmPreset(double degrees) {
       this.degrees = degrees;
     }
+  }
+
+  public static class RollerConstants {
+   public static final double inPower = -0.9;
+   public static final double outPower = 0.5;
+   public static final double shootPower = 1.0;
   }
 }
