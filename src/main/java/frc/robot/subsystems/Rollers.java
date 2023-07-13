@@ -21,6 +21,7 @@ public class Rollers extends SubsystemBase {
   public Rollers() {
     rollerMtr = new CANSparkMax(CANDevices.rollerId, MotorType.kBrushless);
     rollerMtr.setInverted(true);
+    rollerMtr.setSmartCurrentLimit(120);
     isManual = false;
   }
 

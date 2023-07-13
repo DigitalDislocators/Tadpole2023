@@ -8,6 +8,7 @@ import frc.robot.Constants.ArmPreset;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.ArmManual;
+import frc.robot.commands.Auto;
 import frc.robot.commands.InRoller;
 import frc.robot.commands.OutRoller;
 import frc.robot.commands.RollersManual;
@@ -15,6 +16,7 @@ import frc.robot.commands.SetPreset;
 import frc.robot.commands.ShootRoller;
 import frc.robot.commands.StopRollers;
 import frc.robot.commands.TankDrive;
+import frc.robot.commands.ToggleBraking;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Rollers;
@@ -45,6 +47,7 @@ public class RobotContainer {
   private final XboxController operatorController = new XboxController(ControllerConstants.operatorController);
 
   private final Trigger driverRightTrigger = new Trigger(() -> driverController.getRightTriggerAxis() > 0.5);
+  private final Trigger driverLeftTrigger = new Trigger(() -> driverController.getLeftTriggerAxis() > 0.5);
 
   private final JoystickButton operatorAButton = new JoystickButton(operatorController, 1);
   private final JoystickButton operatorBButton = new JoystickButton(operatorController, 2);
@@ -70,7 +73,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-      if(!DriverStation.isJoystickConnected(ControllerConstants.rightJoystickPort)) {
+    if(!DriverStation.isJoystickConnected(ControllerConstants.rightJoystickPort)) {
       drive.setDefaultCommand(new ArcadeDrive(
         () -> deadband(-driverController.getLeftY()), 
         () -> deadband(driverController.getRightX()), 
@@ -88,6 +91,7 @@ public class RobotContainer {
     }
 
     driverRightTrigger.onTrue(new InRoller(rollers)).onFalse(new StopRollers(rollers));
+    driverLeftTrigger.whileTrue(new ToggleBraking(drive));
 
     arm.setDefaultCommand(new ArmManual(() -> deadband(-operatorController.getRightY()), arm));
 
@@ -109,7 +113,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return null;
+    return new Auto(drive, rollers, arm);
   }
 
   public double deadband(double input) {

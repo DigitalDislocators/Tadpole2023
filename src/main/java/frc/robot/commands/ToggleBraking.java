@@ -4,43 +4,43 @@
 
 package frc.robot.commands;
 
-import frc.robot.Constants.RollerConstants;
-import frc.robot.subsystems.Rollers;
+import frc.robot.subsystems.Drive;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class InRoller extends CommandBase {
-
-  private final Rollers rollers;
+public class ToggleBraking extends CommandBase {
+  
+  private final Drive drive;
 
   /**
    * Creates a new ExampleCommand.
    *
-   * @param rollers The subsystem used by this command.
+   * @param subsystem The subsystem used by this command.
    */
-  public InRoller(Rollers rollers) {
-    this.rollers = rollers;
+  public ToggleBraking(Drive drive) {
+    this.drive = drive;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(rollers);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    drive.setBraking(true);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    rollers.setPower(RollerConstants.inPower);
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    drive.setBraking(false);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

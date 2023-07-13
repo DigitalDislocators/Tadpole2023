@@ -30,22 +30,22 @@ public final class Constants {
     public static final int operatorController = 2;
   }
 
+  public static class DriveConstants {
+    public static final double maxStraightPower = 1.0;
+    public static final double maxTurnPower = 1.0;
+  }
+
   public static class ArmConstants {
     public static final double maxPower = 0.5;
     public static final double kP = 0.02;
     public static final double kD = 0.0;
 
-    public static final double gearReduction = (1.0 / 100.0) * (16.0 / 24.0);
+    public static final double gearReduction = (1.0 / 100.0) * (14.0 / 18.0); // 14 to 18
     public static final double degreesToEncRev = gearReduction * 360.0;
     public static final double offsetDeg = 47.0;
 
-    public static final double minDeg = -47.0;
+    public static final double minDeg = -36.0;
     public static final double maxDeg = 90.0;
-  }
-
-  public enum RollerMode {
-    Cube,
-    Cone
   }
 
   public enum ArmPreset {

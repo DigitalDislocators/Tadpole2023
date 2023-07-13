@@ -8,8 +8,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
@@ -32,7 +34,8 @@ public class Arm extends SubsystemBase {
   public Arm() {
     armMtr = new CANSparkMax(CANDevices.armId, MotorType.kBrushless);
     armMtr.setInverted(true);
-    armMtr.setSmartCurrentLimit(40);
+    armMtr.setSmartCurrentLimit(120);
+    armMtr.setIdleMode(IdleMode.kCoast);
 
     armEnc = armMtr.getEncoder();
     armEnc.setPositionConversionFactor(ArmConstants.degreesToEncRev);
@@ -57,8 +60,8 @@ public class Arm extends SubsystemBase {
     // else if(target < ArmConstants.minDeg) {
     //   target = ArmConstants.minDeg;
     // }
-
-    pid.setReference(target, ControlType.kPosition);
+    if(DriverStation.isAutonomous())
+      pid.setReference(target, ControlType.kPosition);
   }
 
   @Override
@@ -77,6 +80,12 @@ public class Arm extends SubsystemBase {
   }
 
   public void setPower(double power) {
-      target += (power * 1.5);
+      // target += (power * 1.5);
+      // if((armEnc.getPosition() >= ArmConstants.maxDeg && power > 0) || (armEnc.getPosition() <= ArmConstants.minDeg && power < 0)) {
+      //   armMtr.set(0.0);
+      // }
+      // else {
+        armMtr.set(power * ArmConstants.maxPower);
+      // }
   }
 }
