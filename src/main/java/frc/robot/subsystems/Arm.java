@@ -11,7 +11,6 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
@@ -28,7 +27,9 @@ public class Arm extends SubsystemBase {
 
   private double target;
 
-  private ArmPreset preset;
+  private double preset;
+
+  private boolean isManual;
 
   /** Creates a new ExampleSubsystem. */
   public Arm() {
@@ -45,8 +46,8 @@ public class Arm extends SubsystemBase {
     pid.setOutputRange(-ArmConstants.maxPower, ArmConstants.maxPower);
     pid.setP(ArmConstants.kP);
 
-    preset = ArmPreset.Stow;
-    target = ArmPreset.Stow.degrees;
+    preset = ArmPreset.stow;
+    target = ArmPreset.stow;
   }
 
   @Override
@@ -54,14 +55,9 @@ public class Arm extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("arm degrees", armEnc.getPosition());
 
-    // if(target > ArmConstants.maxDeg) {
-    //   target = ArmConstants.maxDeg;
-    // }
-    // else if(target < ArmConstants.minDeg) {
-    //   target = ArmConstants.minDeg;
-    // }
-    if(DriverStation.isAutonomous())
+    if(!isManual) {
       pid.setReference(target, ControlType.kPosition);
+    }
   }
 
   @Override
@@ -69,23 +65,26 @@ public class Arm extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
 
-  public ArmPreset getPreset() {
+  public double getPreset() {
     return preset;
   }
 
-  public void setPreset(ArmPreset preset) {
-    target = preset.degrees;
+  public void setPreset(double preset) {
+    target = preset;
     this.preset = preset;
 
   }
 
   public void setPower(double power) {
-      // target += (power * 1.5);
-      // if((armEnc.getPosition() >= ArmConstants.maxDeg && power > 0) || (armEnc.getPosition() <= ArmConstants.minDeg && power < 0)) {
-      //   armMtr.set(0.0);
-      // }
-      // else {
+      if(power != 0.0) {
+        isManual = true;
         armMtr.set(power * ArmConstants.maxPower);
-      // }
+      }
+      else {
+        if(isManual) {
+          target = armEnc.getPosition();
+        }
+        isManual = false;
+      }
   }
 }

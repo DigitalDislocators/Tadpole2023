@@ -9,12 +9,12 @@ import frc.robot.subsystems.Rollers;
 public class Auto extends SequentialCommandGroup {
     public Auto(Drive drive, Rollers rollers, Arm arm) {
         super(
-            new SetPreset(ArmPreset.Hover, arm),
+            new SetPreset(ArmPreset.vertical, arm),
             new Wait(0.25),
             new OutRoller(rollers),
             new Wait(2.0),
             new StopRollers(rollers),
-            new SetPreset(ArmPreset.Stow, arm),
+            new SetPreset(ArmPreset.stow, arm),
             new Wait(10.0)
             // new DriveTime(-0.4, 2.0, drive)
         );

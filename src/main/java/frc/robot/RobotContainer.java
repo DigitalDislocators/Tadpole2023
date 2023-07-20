@@ -9,8 +9,10 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.ArmManual;
 import frc.robot.commands.Auto;
+import frc.robot.commands.BumpShootCubeMobility;
 import frc.robot.commands.InRoller;
 import frc.robot.commands.OutRoller;
+import frc.robot.commands.PathTest;
 import frc.robot.commands.RollersManual;
 import frc.robot.commands.SetPreset;
 import frc.robot.commands.ShootRoller;
@@ -20,6 +22,7 @@ import frc.robot.commands.ToggleBraking;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Rollers;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,12 +49,12 @@ public class RobotContainer {
   private final XboxController driverController = new XboxController(ControllerConstants.driverControllerPort);
   private final XboxController operatorController = new XboxController(ControllerConstants.operatorController);
 
-  private final Trigger driverRightTrigger = new Trigger(() -> driverController.getRightTriggerAxis() > 0.5);
-  private final Trigger driverLeftTrigger = new Trigger(() -> driverController.getLeftTriggerAxis() > 0.5);
+  private final Trigger driverRightTrigger = new Trigger(() -> driverController.getRightTriggerAxis() > 0.25);
+  private final Trigger driverLeftTrigger = new Trigger(() -> driverController.getLeftTriggerAxis() > 0.25);
 
   private final JoystickButton operatorAButton = new JoystickButton(operatorController, 1);
   private final JoystickButton operatorBButton = new JoystickButton(operatorController, 2);
-  private final JoystickButton operatorXButton = new JoystickButton(operatorController, 3);
+  // private final JoystickButton operatorXButton = new JoystickButton(operatorController, 3);
   private final JoystickButton operatorYButton = new JoystickButton(operatorController, 4);
   private final JoystickButton operatorRightBumper = new JoystickButton(operatorController, 6);
   private final JoystickButton operatorLeftBumper = new JoystickButton(operatorController, 5);
@@ -95,12 +98,11 @@ public class RobotContainer {
 
     arm.setDefaultCommand(new ArmManual(() -> deadband(-operatorController.getRightY()), arm));
 
-    rollers.setDefaultCommand(new RollersManual(() -> deadband(operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()), rollers));
+    rollers.setDefaultCommand(new RollersManual(() -> deadband(operatorController.getRightTriggerAxis() - operatorController.getLeftTriggerAxis()), rollers));
 
-    operatorAButton.onTrue(new SetPreset(ArmPreset.Wheelie, arm));
-    operatorBButton.onTrue(new SetPreset(ArmPreset.Hover, arm));
-    operatorXButton.onTrue(new SetPreset(ArmPreset.Stow, arm));
-    operatorYButton.onTrue(new SetPreset(ArmPreset.Shoot, arm));
+    operatorAButton.onTrue(new SetPreset(ArmPreset.intake, arm));
+    operatorBButton.onTrue(new SetPreset(ArmPreset.vertical, arm));
+    operatorYButton.onTrue(new SetPreset(ArmPreset.stow, arm));
 
     operatorRightBumper.onTrue(new ShootRoller(rollers)).onFalse(new StopRollers(rollers));
     operatorLeftBumper.onTrue(new OutRoller(rollers)).onFalse(new StopRollers(rollers));
@@ -113,7 +115,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return new Auto(drive, rollers, arm);
+    return new BumpShootCubeMobility(drive, rollers, arm);
   }
 
   public double deadband(double input) {

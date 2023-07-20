@@ -29,7 +29,7 @@ public class DriveStraightTime extends CommandBase {
 
     timer = new Timer();
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements();
+    addRequirements(drive);
   }
 
   // Called when the command is initially scheduled.

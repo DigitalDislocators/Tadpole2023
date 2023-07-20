@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 
-import frc.robot.Constants.ArmPreset;
 import frc.robot.subsystems.Arm;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -13,14 +12,14 @@ public class SetPreset extends CommandBase {
 
   private final Arm arm;
 
-  private final ArmPreset preset;
+  private final double preset;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetPreset(ArmPreset preset, Arm arm) {
+  public SetPreset(double preset, Arm arm) {
     this.arm = arm;
     this.preset = preset;
     // Use addRequirements() here to declare subsystem dependencies.

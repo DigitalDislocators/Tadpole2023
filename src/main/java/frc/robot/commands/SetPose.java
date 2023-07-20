@@ -5,20 +5,25 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.Drive;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class DountCmd extends CommandBase {
-  
+public class SetPose extends CommandBase {
+
   private final Drive drive;
+  
+  private final Pose2d pose;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DountCmd(Drive drive) {
+  public SetPose(Pose2d pose, Drive drive) {
     this.drive = drive;
+    this.pose = pose;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
   }
@@ -29,7 +34,9 @@ public class DountCmd extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    drive.setPose(pose);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -38,6 +45,6 @@ public class DountCmd extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

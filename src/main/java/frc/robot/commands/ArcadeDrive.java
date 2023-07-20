@@ -9,7 +9,6 @@ import frc.robot.subsystems.Drive;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -46,30 +45,28 @@ public class ArcadeDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(DriverStation.isTeleop()) {
-      double straightPower;
-      double turnPower;
+    double straightPower;
+    double turnPower;
 
-      if(isNonLinear) {
-        straightPower = straight.getAsDouble() * Math.abs(straight.getAsDouble());
-        turnPower = turn.getAsDouble() * Math.abs(turn.getAsDouble());
-      }
-      else {
-        straightPower = straight.getAsDouble();
-        turnPower = turn.getAsDouble();
-      }
-
-      turnPower *= DriveConstants.maxTurnPower;
-
-      if(Math.abs(straightPower) < 0.1) {
-        drive.setCurrentLimit(120);
-      }
-      else {
-        drive.setCurrentLimit(60);
-      }
-
-      drive.drive(straightPower + turnPower, straightPower - turnPower);
+    if(isNonLinear) {
+      straightPower = straight.getAsDouble() * Math.abs(straight.getAsDouble());
+      turnPower = turn.getAsDouble() * Math.abs(turn.getAsDouble());
     }
+    else {
+      straightPower = straight.getAsDouble();
+      turnPower = turn.getAsDouble();
+    }
+
+    turnPower *= DriveConstants.maxTurnPower;
+
+    if(Math.abs(straightPower) < 0.1) {
+      drive.setCurrentLimit(120);
+    }
+    else {
+      drive.setCurrentLimit(60);
+    }
+
+    drive.drive(straightPower + turnPower, straightPower - turnPower);
   }
 
   // Called once the command ends or is interrupted.

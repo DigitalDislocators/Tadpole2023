@@ -7,8 +7,10 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANDevices;
+import frc.robot.Constants.RollerConstants;
 
 public class Rollers extends SubsystemBase {
 
@@ -28,6 +30,14 @@ public class Rollers extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if(isManual || rollerMtr.get() >= 0.0) {
+      rollerMtr.setSmartCurrentLimit(RollerConstants.outCurrentLimitAmps);
+    }
+    else if (rollerMtr.get() < 0.0) {
+      rollerMtr.setSmartCurrentLimit(RollerConstants.inCurrentLimitAmps);
+    }
+
+    SmartDashboard.putNumber("roller current", rollerMtr.getOutputCurrent());
   }
 
   @Override
@@ -37,7 +47,7 @@ public class Rollers extends SubsystemBase {
 
   public void setPower(double power) {
     if(!isManual) {
-      rollerMtr.set(power);
+      rollerMtr.setVoltage(power * 12.0);
     }
   }
 

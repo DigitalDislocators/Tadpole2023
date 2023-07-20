@@ -8,7 +8,6 @@ import frc.robot.subsystems.Drive;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -45,16 +44,14 @@ public class TankDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(DriverStation.isTeleop()) {
-      if(isNonLinear) {
-        double leftPower = left.getAsDouble() * Math.abs(left.getAsDouble());
-        double rightPower = right.getAsDouble() * Math.abs(right.getAsDouble());
+    if(isNonLinear) {
+      double leftPower = left.getAsDouble() * Math.abs(left.getAsDouble());
+      double rightPower = right.getAsDouble() * Math.abs(right.getAsDouble());
 
-        drive.drive(leftPower, rightPower);
-      }
-      else {
-        drive.drive(left.getAsDouble(), right.getAsDouble());
-      }
+      drive.drive(leftPower, rightPower);
+    }
+    else {
+      drive.drive(left.getAsDouble(), right.getAsDouble());
     }
   }
 
