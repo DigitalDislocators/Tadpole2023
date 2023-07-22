@@ -11,8 +11,10 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANDevices;
@@ -26,7 +28,11 @@ public class Drive extends SubsystemBase {
   private final RelativeEncoder leftEnc;
   private final RelativeEncoder rightEnc;
 
-  private final DifferentialDriveOdometry odometry;
+  private final ADXRS450_Gyro gyro;
+
+  private Rotation2d gyroOffset;
+
+  // private final DifferentialDriveOdometry odometry;
 
   /** Creates a new ExampleSubsystem. */
   public Drive() {
@@ -51,28 +57,45 @@ public class Drive extends SubsystemBase {
     leftEnc.setVelocityConversionFactor(DriveConstants.encRPMToMetersPerSecond);
     rightEnc.setVelocityConversionFactor(DriveConstants.encRPMToMetersPerSecond);
 
-    odometry = new DifferentialDriveOdometry(
-      new Rotation2d(), // FIXME
-      leftEnc.getPosition(),
-      rightEnc.getPosition()
-    );
+    gyro = new ADXRS450_Gyro();
+
+    gyroOffset = new Rotation2d();
+
+    resetEncoders();
+
+    setHeading(new Rotation2d());
+
+    // odometry = new DifferentialDriveOdometry(
+    //   getHeading(),
+    //   leftEnc.getPosition(),
+    //   rightEnc.getPosition()
+    // );
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
 
-    odometry.update(
-      new Rotation2d(), // FIXME
-      leftEnc.getPosition(),
-      rightEnc.getPosition()
-    );
+    // odometry.update(
+    //   getHeading(),
+    //   leftEnc.getPosition(),
+    //   rightEnc.getPosition()
+    // );
 
-    SmartDashboard.putNumber("left", leftDrive.get());
-    SmartDashboard.putNumber("right", rightDrive.get());
+    if(DriverStation.isAutonomous()) {
+      setCurrentLimit(120);
+    }
 
-    SmartDashboard.putNumber("x pose", odometry.getPoseMeters().getX());
-    SmartDashboard.putNumber("y pose", odometry.getPoseMeters().getY());
+    SmartDashboard.putNumber("average distance", getAverageDistance());
+
+    SmartDashboard.putNumber("heading", getHeading().getDegrees());
+
+    SmartDashboard.putNumber("turn rate", getTurnRate());
+
+    // SmartDashboard.putNumber("x pose", odometry.getPoseMeters().getX());
+    // SmartDashboard.putNumber("y pose", odometry.getPoseMeters().getY());
+
+    SmartDashboard.putNumber("speed (m/s)", (rightEnc.getVelocity() + leftEnc.getVelocity()) / 2.0);
 
     SmartDashboard.putBoolean("braking", leftDrive.getIdleMode().equals(IdleMode.kBrake));
 
@@ -117,21 +140,49 @@ public class Drive extends SubsystemBase {
   }
 
   public void setPose(Pose2d pose) {
+    gyro.reset();
+
+    gyroOffset = pose.getRotation();
+
     leftEnc.setPosition(0.0);
     rightEnc.setPosition(0.0);
 
-    odometry.resetPosition(new Rotation2d(), 0.0, 0.0, pose); // FIXME
+    // odometry.resetPosition(getHeading(), 0.0, 0.0, pose);
   }
 
   public Pose2d getPose() {
-    return odometry.getPoseMeters();
+    // return odometry.getPoseMeters();
+    return null;
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(leftEnc.getVelocity(), rightEnc.getVelocity());
   }
 
-  public double getHeading() {
-    return 0.0; // FIXME
+  public double getAverageDistance() {
+    return (rightEnc.getPosition());
+  }
+
+  public double getAverageVelocity() {
+    return (rightEnc.getVelocity() + leftEnc.getVelocity()) * 0.5;
+  }
+
+  public Rotation2d getHeading() {
+    return gyro.getRotation2d().plus(gyroOffset);
+  }
+
+  public void setHeading(Rotation2d heading) {
+    gyro.reset();
+
+    gyroOffset = heading;
+  }
+
+  public double getTurnRate() {
+    return Units.degreesToRadians(gyro.getRate());
+  }
+
+  public void resetEncoders() {
+    leftEnc.setPosition(0.0);
+    rightEnc.setPosition(0.0);
   }
 }

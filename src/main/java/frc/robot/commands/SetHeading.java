@@ -5,55 +5,46 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.Drive;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class DriveStraightTime extends CommandBase {
+public class SetHeading extends CommandBase {
 
   private final Drive drive;
-  private final Timer timer;
-  private final double power;
-  private final double seconds;
+  
+  private final Rotation2d heading;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveStraightTime(double power, double seconds, Drive drive) {
+  public SetHeading(Rotation2d heading, Drive drive) {
     this.drive = drive;
-    this.power = power;
-    this.seconds = seconds;
-
-    timer = new Timer();
+    this.heading = heading;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    timer.restart();
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drive.drive(power, power);
-    SmartDashboard.putNumber("timer", timer.get());
+    drive.setHeading(heading);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    drive.drive(0.0, 0.0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return timer.hasElapsed(seconds);
+    return true;
   }
 }

@@ -8,23 +8,26 @@ import frc.robot.Constants.ArmPreset;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.ArmManual;
-import frc.robot.commands.Auto;
-import frc.robot.commands.BumpShootCubeMobility;
 import frc.robot.commands.InRoller;
 import frc.robot.commands.OutRoller;
-import frc.robot.commands.PathTest;
 import frc.robot.commands.RollersManual;
 import frc.robot.commands.SetPreset;
 import frc.robot.commands.ShootRoller;
 import frc.robot.commands.StopRollers;
 import frc.robot.commands.TankDrive;
 import frc.robot.commands.ToggleBraking;
+import frc.robot.commands.auto.BumpHighLow;
+import frc.robot.commands.auto.BumpHighMobility;
+import frc.robot.commands.auto.High;
+import frc.robot.commands.auto.Low;
+import frc.robot.commands.auto.SmoothHighLow;
+import frc.robot.commands.auto.SmoothHighMobility;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Rollers;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -42,6 +45,8 @@ public class RobotContainer {
   private final Drive drive = new Drive();
   private final Arm arm = new Arm();
   private final Rollers rollers = new Rollers();
+
+  private final SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
   private final CommandJoystick leftJoystick = new CommandJoystick(ControllerConstants.leftJoystickPort);
   private final CommandJoystick rightJoystick = new CommandJoystick(ControllerConstants.rightJoystickPort);
@@ -64,6 +69,14 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+
+    autoChooser.setDefaultOption("DoNothing", null);
+    autoChooser.addOption("Low", new Low(rollers, arm));
+    autoChooser.addOption("High", new High(rollers, arm));
+    autoChooser.addOption("BumpHighMobility", new BumpHighMobility(drive, rollers, arm));
+    autoChooser.addOption("BumpHighLow", new BumpHighLow(drive, rollers, arm));
+    autoChooser.addOption("SmoothHighMobility", new SmoothHighMobility(drive, rollers, arm));
+    autoChooser.addOption("SmoothHighLow", new SmoothHighLow(drive, rollers, arm));
   }
 
   /**
@@ -115,7 +128,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return new BumpShootCubeMobility(drive, rollers, arm);
+    // return new DriveStraightDistance(-2.0, 1.0, new Rotation2d(), drive).andThen(new TurnToHeading(new Rotation2d(Math.PI), drive)).andThen(new DriveStraightDistance(-2.0, 1.5, new Rotation2d(Math.PI), drive));
+    return autoChooser.getSelected();
   }
 
   public double deadband(double input) {

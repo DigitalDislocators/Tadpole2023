@@ -41,27 +41,46 @@ public final class Constants {
     public static final double gearReduction = 1.0 / 4.0;
 
     public static final double encRevToMeters = Units.inchesToMeters((4 * Math.PI) * gearReduction);
-    public static final double encRPMToMetersPerSecond = Units.inchesToMeters((4 * Math.PI) * (gearReduction * 60.0));
+    public static final double encRPMToMetersPerSecond = Units.inchesToMeters((4 * Math.PI) * gearReduction) / 60.0;
   }
 
   public static class AutoConstants {
     public static final double ksVolts = 0.12862;
     public static final double kvVoltSecondsPerMeter = 1.5337;
-    public static final double kaVoltSecondsSquaredPerMeter = 0.433; //1.6421;
+    public static final double kaVoltSecondsSquaredPerMeter = 1.6421; //0.433;
 
-    public static final double kPDriveVel = 0.99721;
+    public static final double kPDriveVel = 0.99721 * 4.0;
 
-    public static final double kTrackWidthMeters = 0.3;
+    public static final double kTrackWidthMeters = 1.0;
     public static final DifferentialDriveKinematics kDriveKinematics =
       new DifferentialDriveKinematics(kTrackWidthMeters);
     
-    public static final double maxVelMetersPerSecond = 1.5;
-    public static final double maxAccelMetersPerSecondSq = 0.5;
+    public static final double maxVelMetersPerSecond = 0.5;
+    public static final double maxAccelMetersPerSecondSq = 1.0;
 
-    public static final double kRamseteB = 2.0;
-    public static final double kRamseteZeta = 0.7;
+    public static final double kRamseteB = 2.0 * 0.125 * 0.75;
+    public static final double kRamseteZeta = 0.7 * 0.125 * 0.125 * 0.125 * 0.0;
 
     public static final RamseteController kRamseteCotroller = new RamseteController(kRamseteB, kRamseteZeta);
+
+    public static final double accelMetersPerSecondSquared = 1.0;
+
+    public static final double driveOverBumpMetersPerSecond = 0.5;
+
+    public static final double turnRateRadiansPerSecond = Math.PI;
+    public static final double turnAccelRadiansPerSecondSquared = Math.PI * 0.5;
+
+    public static final double driveP = 3.5;
+    public static final double driveI = 0.0;
+    public static final double driveD = 0.04;
+
+    public static final double driveTurnP = 1.0;
+    public static final double driveTurnI = 0.0;
+    public static final double driveTurnD = 0.175;
+
+    public static final double staticTurnP = 3.5; // 3.2
+    public static final double staticTurnI = 0.0;
+    public static final double staticTurnD = 0.24;
   }
 
   public static class ArmConstants {

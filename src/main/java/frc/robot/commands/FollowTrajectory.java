@@ -1,12 +1,10 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.subsystems.Drive;
 
@@ -23,7 +21,7 @@ public class FollowTrajectory extends PPRamseteCommand {
             new PIDController(0, 0, 0),
             new PIDController(0, 0, 0),
             drive::driveVolts,
-            true,
+            false,
             drive
         );
 
